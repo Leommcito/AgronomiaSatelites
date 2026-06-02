@@ -361,4 +361,84 @@ var alertCounts = serieLimpia.reduceColumns({
 });
 print('Alert counts by level:', alertCounts);
 
-print('âœ… MetodologÃ­a completa implementada. Revisa la pestaÃ±a Tasks.');
+// ==============================================================================
+// 8. EXPORTACIÓN CSV: TODAS LAS IMÁGENES CON VALIDACIÓN DE NUBES
+// ==============================================================================
+// Incluye TODAS las imágenes (incluso nubladas). Las métricas son null
+// donde hay nubes. Las columnas de nubosidad explican el estado.
+var csvCompleto = ee.FeatureCollection(
+  s2Vinculada.map(function(img) {
+    var fecha = ee.Date(img.get('system:time_start'));
+
+    // Aplicar máscara de nubes para métricas (null donde hay nubes)
+    var imgMasked = enmascararNubesDobleFiltro(img);
+
+    // Calcular métricas sobre la imagen enmascarada
+    var imgConMetricas = calcularMetricas(imgMasked);
+
+    // Agregar cs_cdf original (sin máscara) para estadísticas de nubosidad
+    imgConMetricas = imgConMetricas.addBands(
+      img.select('cs_cdf').rename('cs_cdf_raw')
+    );
+
+    // Reducción por parcela: mean + count
+    var stats = imgConMetricas.reduceRegions({
+      collection: parcelas,
+      reducer: ee.Reducer.mean().combine({
+        reducer2: ee.Reducer.count(),
+        sharedInputs: true
+      }),
+      scale: 10
+    });
+
+    return stats.map(function(f) {
+      var pixClaros = ee.Number(f.get('NDRE_count'));
+      var pixTotales = ee.Number(f.get('cs_cdf_raw_count'));
+      var pixNublados = pixTotales.subtract(pixClaros);
+      var porcClaros = ee.Algorithms.If(
+        pixTotales.gt(0),
+        pixClaros.divide(pixTotales).multiply(100),
+        0
+      );
+
+      var estado = ee.Algorithms.If(
+        porcClaros.gte(70), 'Despejado',
+        ee.Algorithms.If(porcClaros.gte(30), 'Parcialmente Nublado', 'Muy Nublado')
+      );
+
+      return ee.Feature(null, {
+        'Fecha': fecha.format('YYYY-MM-dd'),
+        'ID_Parcela': f.get('name'),
+        'NDVI': f.get('NDVI_Mask_mean'),
+        'NDRE': f.get('NDRE_mean'),
+        'S2REP': f.get('S2REP_mean'),
+        'LAI_RedEdge': f.get('LAI_RedEdge_mean'),
+        'Cab_RedEdge': f.get('Cab_RedEdge_mean'),
+        'MSAVI2': f.get('MSAVI2_mean'),
+        'Kc_Actual': f.get('Kc_Actual_mean'),
+        'Pixeles_Claros': pixClaros,
+        'Pixeles_Totales': pixTotales,
+        'Pixeles_Nublados': pixNublados,
+        'Porcentaje_Claros': porcClaros,
+        'Estado_Nubosidad': estado,
+        'Cloud_Score_Medio': f.get('cs_cdf_raw_mean')
+      });
+    });
+  })
+).flatten();
+
+Export.table.toDrive({
+  collection: csvCompleto,
+  description: 'Dataset_Imagenes_Individuales_Con_Nubes',
+  folder: 'Tesis_Mandarinas',
+  fileFormat: 'CSV',
+  selectors: [
+    'Fecha', 'ID_Parcela',
+    'NDVI', 'NDRE', 'S2REP', 'LAI_RedEdge', 'Cab_RedEdge', 'MSAVI2', 'Kc_Actual',
+    'Pixeles_Claros', 'Pixeles_Totales', 'Pixeles_Nublados', 'Porcentaje_Claros',
+    'Estado_Nubosidad', 'Cloud_Score_Medio'
+  ]
+});
+
+print('CSV con nubes agregado. Revisa Tasks para exportar.');
+print('✅ Metodolog\u00eda completa implementada. Revisa la pesta\u00f1a Tasks.');
