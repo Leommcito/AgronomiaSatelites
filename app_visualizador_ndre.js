@@ -54,12 +54,11 @@ var lblFecha = ui.Label('Fecha: cargando...', {fontSize: '14px', fontWeight: 'bo
 // 3c. Botón Play / Pause
 var reproduciendo = false;
 var intervaloId = null;
-var btnPlay = ui.Button('▶ Play');
-btnPlay.setStyle({margin: '0 5px'});
+var btnPlay = ui.Button({label: '▶ Play', style: {margin: '0 5px'}});
 
 // 3d. Slider
 var slider = ui.Slider(0, 1, 0, 1);
-slider.setStyle({width: '100%', margin: '5px 0'});
+slider.style().set({width: '100%', margin: '5px 0'});
 
 // 3e. Panel de control
 var panelControl = ui.Panel({
