@@ -53,7 +53,6 @@ var lblFecha = ui.Label('Fecha: cargando...', {fontSize: '14px', fontWeight: 'bo
 
 // 3c. Botón Play / Pause
 var reproduciendo = false;
-var intervaloId = null;
 var btnPlay = ui.Button({label: '▶ Play', style: {margin: '0 5px'}});
 
 // 3d. Slider
@@ -151,22 +150,17 @@ slider.onChange(function(valor) {
 // 6b. Play / Pause
 btnPlay.onClick(function() {
   reproduciendo = !reproduciendo;
-  if (reproduciendo) {
-    btnPlay.setLabel('⏸ Pause');
-    intervaloId = ui.util.setInterval(function() {
-      var val = slider.getValue();
-      var maxVal = fechas.length - 1;
-      if (maxVal <= 0) return;
-      slider.setValue(val >= maxVal ? 0 : val + 1);
-    }, 600);
-  } else {
-    btnPlay.setLabel('▶ Play');
-    if (intervaloId !== null) {
-      ui.util.clearInterval(intervaloId);
-      intervaloId = null;
-    }
-  }
+  btnPlay.setLabel(reproduciendo ? '⏸ Pause' : '▶ Play');
 });
+
+// Un solo intervalo que corre siempre, la flag controla si avanza
+ui.util.setInterval(function() {
+  if (!reproduciendo) return;
+  if (fechas.length <= 1) return;
+  var val = slider.getValue();
+  var maxVal = fechas.length - 1;
+  slider.setValue(val >= maxVal ? 0 : val + 1);
+}, 600);
 
 // ---------------------------------------------------------------------------
 // 7. MOSTRAR LA APP (reemplaza el mapa por defecto)
