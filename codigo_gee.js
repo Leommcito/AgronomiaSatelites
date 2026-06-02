@@ -370,11 +370,12 @@ var csvCompleto = ee.FeatureCollection(
   s2Vinculada.map(function(img) {
     var fecha = ee.Date(img.get('system:time_start'));
 
-    // Aplicar máscara de nubes para métricas (null donde hay nubes)
-    var imgMasked = enmascararNubesDobleFiltro(img);
+    // Calcular métricas sobre la imagen CRUDA (todas las bandas)
+    var imgConMetricas = calcularMetricas(img);
 
-    // Calcular métricas sobre la imagen enmascarada
-    var imgConMetricas = calcularMetricas(imgMasked);
+    // Aplicar máscara de nubes a las métricas (null donde hay nubes)
+    var mascara = enmascararNubesDobleFiltro(img).mask();
+    imgConMetricas = imgConMetricas.updateMask(mascara);
 
     // Agregar cs_cdf original (sin máscara) para estadísticas de nubosidad
     imgConMetricas = imgConMetricas.addBands(
