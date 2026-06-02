@@ -186,7 +186,9 @@ mapa.add(panelControl);
 // ---------------------------------------------------------------------------
 print('✅ Visualizador NDRE - Imágenes crudas sin filtrar');
 print('📅 Rango: ' + startDate + ' a ' + endDate);
-print('🛰️ Imágenes disponibles: ' + ndreCol.size());
+ndreCol.size().evaluate(function(n) {
+  print('🛰️ Imágenes disponibles: ' + n);
+});
 print('');
 print('📖 Cómo usar:');
 print('  1. Slider → navegar entre fechas');
