@@ -1,0 +1,101 @@
+[00:18]
+Se entiende, Franco, la pregunta. Escucha. Una consulta, ¿qué mes consideran importante el estallido de la mandarina? La idea es que nos digan qué mes bajar y los resultados para evitar descargar todo y analizar. Puede que algunos índices no arrojen los resultados que se espera como el café. ¿Se entiende lo que les quiero decir?
+
+[00:49]
+Sí, o sea, para para para para, no es la palabra representativo. Todo ciclo del cultivo tiene un mes más importante. Yo te puedo hablar de trigo y cebada y el resto de los cultivos de Buenos Aires que son los cinco. El estadio más importante de sus cultivos es la floración. Entonces, yo en base a ese concepto digo la mandarina debe tener un un un mes importante, pero no es representativo, ¿eh? Es un estadio importante. Bueno. Bueno, ahí ahí ya se lo envío a ver qué responde.
+
+[01:30]
+100000 Ahí Paul está escribiendo.
+
+[02:22]
+No es para NDBI.
+
+[02:27]
+Es en general. Por este punto, el trigo. y se va a dar. Lo importante es ver la floración. Supongo que debe haber algo parecido en las mandarinas.
+
+[02:55]
+Fase 39.
+
+[03:00]
+100000 100000 1 2 3 4 5 6 7 8 9 10 11 16 12 13 14 15 19 20 21 22 23 24 25 29 30 31 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 56 58 59 60 61 62 69 70 71 72 75 76 77 78 79 80 81 82 89 90 91 92 93 94 95 96 97 98 99 40 50 51 59 60 61 62 69 70 71 72 75 76 77 78 79 80 81 84 85 86 87 88 89 90 91 92 95 97 98 99 100 1 2 3 4 5 6 7 8 9 10 11 15 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 39 40 41 46 47 48 49 50 51 52 57 60 62 63 64 69 70 71 72 73 74 75 72 74 75 76 77 79 80 81 85 86 87 88 89 90 91 92 94 95 96 97 99 70 81 82 87 88 89 90 91 91 92 93 94 95 96 97 98 99 100 3 9 1 2 5 9 1 2 5 9 1 2 5 9 1 Franco, ¿qué estaba viendo?
+
+[05:35]
+No importa, eh, si no contestan, Nelly no creo que conteste y la verdad que yo ya no sé. Elijamos, ¿en qué mes fuimos nosotros que está todo verde? Sí.
+
+[05:55]
+¿Fuimos en abril?
+
+[06:00]
+Nosotros, sí, sí, nosotros. Bueno, descárgate abril abril. Descárgate abril y probemos con abril.
+
+[06:12]
+100000 Eh, la la imagen visualizada, también la otra la que sí se interpoló eh en la misma paleta de colores.
+
+[06:51]
+Entonces, ahí vamos a comparar cuál se ve o cuál refleja lo más cercano a la realidad. Esa es la idea.
+
+[07:04]
+Claro, viste que cuando viste que cuando vimos la materia teníamos banda 3 2 1 que te resaltan lo agronómico. 1 2 3, te estoy diciendo cualquier número, ¿no? Falso, positivo o cosas así. Falso, verdadero, bueno. Elegí en este caso si a ver si encontré la web si hay una para reflejar de la mejor mal No, siempre eh ponerla normal, pero ¿Cómo se llama? A ver, eh dame un segundo.
+
+[07:55]
+Se me fue.
+
+[08:12]
+Acordate que siempre lo vas a visualizar solamente con tres bandas, ¿no?
+
+[08:30]
+Claro. No, no, no me puedo acordar cómo se llama esa palabra para decirte.
+
+[08:42]
+Pero bueno, cuando, qué sé yo, cuando querés hacer un análisis de la penetración atmosférica, por decirte, mezclar la banda 7, 6, 5 y en ese orden, a eso es lo que yo voy. Color natural, mándale si querés color natural.
+
+[09:01]
+O el análisis el análisis de la vegetación puede ser 8 A, 11 y 2. Fíjate, hay mucha hay mucha eh combinación, pero son combinaciones de banda. Pero si no anda anda con el clásico que es el natural.
+
+[09:19]
+Claro, y entonces ahí lo mostraste.
+
+[09:36]
+No. Tratar de que tratar, yo yo quiero que veamos lo más lo más cercano a la realidad. Si querés probar ese otro también. Por eso te digo el el el clásico de combinación de de banda, no puedo encontrar, que no puede ser.
+
+[09:57]
+La la lo que vos me estás diciendo es para resaltar una u otra cosa. Acá yo quiero color natural, mándale color natural.
+
+[10:06]
+Pero de todas formas, si querés componer el otro para mandarlo y ver, también así. Eh, a ver, para.
+
+[10:35]
+Tenés color natural, tenés falso color, tenés un infrarrojo para las para la vegetación, tenés agricultura, para el suelo de uso. Acá te acá te paso esto, igual ya seguro lo tenías. Eh Resumiendo.
+
+[11:04]
+Te paso ahora el código y descargas eh todo todo eso sería un rol, ¿no? Todo ese cuadradito sería un solo rol. ¿Sí? Descargas eso, pero antes de descargar me decís cuántas imágenes hay por por fecha. Y a partir de ahí vamos avanzando. Eh, ¿computas así solito y le calculas los índices? Paso número uno. Paso número dos.
+
+[11:26]
+Cuando vas viendo la cantidad de imágenes, le aplicas el algoritmo de la IA de limpieza de de nubes y vemos cuántas nos va, nos debería dar más imágenes que la primera opción y computo computo los números. ¿Sí? Eh, computo los simples. Paso número tres. Elijo ambos y actualizo con eso la de la combinación de bancos.
+
+[11:52]
+Los que no tienen el la limpieza de nubes versus los que sí tienen la limpieza de nube. Y los que sí tienen la limpieza de nube y donde perdés más, también completa interpolando para comparar. O sea, tres tres juegos de imágenes nos tenés que dar. ¿Se entiende? Solamente de un mes. Como nadie como nadie nos respondió, nos nosotros nos mandamos con abrir.
+
+[12:26]
+Pero para fin de cuaje, no sé lo que es cuaje, pero yo entiendo que florece es cuando tiene la florcita que luego se va a hacer la fruta. La florcita esa lo que yo recuerdo tiene algo de color y ese color va va va va a inferir, supongo.
+
+[12:51]
+Bueno, entonces lo hagamos en marzo, okay. Fíjate, marzo o abril. Eres Bueno, bueno, bueno, pero separalo, ¿no? Y no tenés que entregar 13 de datos. Inicialmente yo quiero que cuando compuestés la cantidad de imágenes, vos me mandás un mensajito y me decís, "Profe, mire, con eso encuentro más imágenes, no lo encuentro, o tengo tres versus cinco, no sé, pero solamente de un mes." ¿Okay? Bueno, ahora te paso eso. Sí.
+
+[13:20]
+Y cualquier cosa, ah, y tenemos que ver el jueves, ¿no? ¿A qué hora vamos? ¿Y en qué vamos?
+
+[13:28]
+Mira, yo lo puedo acompañar el jueves, pero no el viernes y no creo que el jueves lo vemos hacer todo. Para mí se van a necesitar tres días. Ay, hay que ver si el jueves no llueve. Ay, Dios.
+
+[13:47]
+Y lo que pasa que con el dron no no tenemos una visión normal. La metodología es tradicional por lo que nos cuenta Nelly que tuvo con un amigo y ella estuvo metida en el tema de la arma, de los limones. Eh, lo hacen eh a ver, no tan manualmente como Es manual, pero no tan rudimentario como nosotros caminando con eso.
+
+[14:09]
+Nosotros deberíamos tener un aparatito que vaya a velocidad constante y en ese aparatito estar montado eh el celular o una cámara y empezar a tomar. Pero como no tenemos, lo vamos a hacer caminando. Y ahí si no sé cómo vamos a hacer para mantener esa velocidad Bueno, pero no podemos perder esta fecha, no sé, después vemos cómo solucionamos eso.
+
+[14:39]
+Pero como yo te digo, yo los puedo acompañar el jueves, el viernes no podría. Eh, bueno, después lo vamos a charlar, adiós. Listo, pues Franco, nos estamos escribiendo. Adiós, chao, chao.
+
+[14:55]
+Sí.
