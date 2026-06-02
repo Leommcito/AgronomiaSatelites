@@ -370,8 +370,29 @@ var csvCompleto = ee.FeatureCollection(
   s2Vinculada.map(function(img) {
     var fecha = ee.Date(img.get('system:time_start'));
 
-    // Calcular métricas sobre la imagen CRUDA (todas las bandas)
-    var imgConMetricas = calcularMetricas(img);
+    // Calcular métricas directamente sobre B4-B8 escaladas (evita función externa)
+    var b4 = img.select('B4').divide(10000);
+    var b5 = img.select('B5').divide(10000);
+    var b6 = img.select('B6').divide(10000);
+    var b7 = img.select('B7').divide(10000);
+    var b8 = img.select('B8').divide(10000);
+
+    var ndvi = b8.subtract(b4).divide(b8.add(b4)).rename('NDVI_Mask');
+    var ndre = b8.subtract(b5).divide(b8.add(b5)).rename('NDRE');
+    var denom = b6.subtract(b5);
+    var s2repExpr = b4.add(b7).divide(2).subtract(b5).divide(b6.subtract(b5));
+    var s2repValid = s2repExpr.multiply(35).add(705).rename('S2REP')
+      .updateMask(denom.abs().gt(0.0001));
+    var cab = s2repValid.subtract(700).multiply(Cab_factor).rename('Cab_RedEdge');
+    var lai = s2repValid.subtract(700).multiply(LAI_factor).rename('LAI_RedEdge');
+    var msavi2Expr = b8.multiply(2).add(1).subtract(
+      b8.multiply(2).add(1).pow(2).subtract(b8.subtract(b4).multiply(8)).sqrt()
+    ).divide(2);
+    var msavi2 = msavi2Expr.rename('MSAVI2');
+    var kc = msavi2.multiply(kc_slope).add(kc_intercept).rename('Kc_Actual');
+
+    var imgConMetricas = img.addBands([ndvi, ndre, s2repValid, cab, lai, msavi2, kc])
+      .copyProperties(img, ['system:time_start']);
 
     // Aplicar máscara de nubes a las métricas (null donde hay nubes)
     var mascara = enmascararNubesDobleFiltro(img).mask();
