@@ -49,8 +49,7 @@ mapa.centerObject(parcelas, 14);
 mapa.addLayer(parcelas, {color: 'red'}, 'Parcelas');
 
 // 3b. Etiqueta de fecha
-var lblFecha = ui.Label('Fecha: cargando...');
-lblFecha.setStyle({fontSize: '14px', fontWeight: 'bold', margin: '0 10px'});
+var lblFecha = ui.Label('Fecha: cargando...', {fontSize: '14px', fontWeight: 'bold', margin: '0 10px'});
 
 // 3c. Botón Play / Pause
 var reproduciendo = false;
