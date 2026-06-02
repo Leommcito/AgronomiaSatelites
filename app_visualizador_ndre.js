@@ -79,8 +79,8 @@ timestamps.evaluate(function(ts) {
   fechas = ts.map(function(t) {
     var d = new Date(t);
     var yyyy = d.getFullYear();
-    var mm = String(d.getMonth() + 1).padStart(2, '0');
-    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    var dd = ('0' + d.getDate()).slice(-2);
     return yyyy + '-' + mm + '-' + dd;
   });
   numImagenes = fechas.length;
