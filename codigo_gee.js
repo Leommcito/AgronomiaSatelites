@@ -391,12 +391,14 @@ var csvCompleto = ee.FeatureCollection(
     var msavi2 = msavi2Expr.rename('MSAVI2');
     var kc = msavi2.multiply(kc_slope).add(kc_intercept).rename('Kc_Actual');
 
-    var imgConMetricas = img.addBands([ndvi, ndre, s2repValid, cab, lai, msavi2, kc])
-      .copyProperties(img, ['system:time_start']);
+    // Forzar creación como ee.Image explícito
+    var imgConMetricas = ee.Image(
+      img.addBands([ndvi, ndre, s2repValid, cab, lai, msavi2, kc])
+    ).copyProperties(img, ['system:time_start']);
 
     // Aplicar máscara de nubes a las métricas (null donde hay nubes)
     var mascara = enmascararNubesDobleFiltro(img).mask();
-    imgConMetricas = imgConMetricas.updateMask(mascara);
+    imgConMetricas = ee.Image(imgConMetricas).updateMask(mascara);
 
     // Agregar cs_cdf original (sin máscara) para estadísticas de nubosidad
     imgConMetricas = imgConMetricas.addBands(
