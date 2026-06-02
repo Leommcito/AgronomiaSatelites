@@ -191,13 +191,20 @@ var serieSemanal = sgSmoothed.map(function(image) {
     var laiMean = ee.Number(f.get('LAI_Mean'));
     var laiStd = ee.Number(f.get('LAI_Std'));
     
-    var zCab = cabActual.subtract(cabMean).divide(cabStd).abs();
-    var zLai = laiActual.subtract(laiMean).divide(laiStd).abs();
-    var zMax = zCab.max(zLai);
-    
+    // Estrés 3 niveles, SOLO si hay datos válidos (cabActual no nulo)
     var estres = ee.Algorithms.If(
-      zMax.gte(2), 'Alerta Crítica',
-      ee.Algorithms.If(zMax.gte(1), 'Precaución', 'Normal')
+      cabActual,  // GEE evalúa el else si cabActual es null
+      ee.Algorithms.If(
+        cabActual.subtract(cabMean).divide(cabStd).abs().max(
+          laiActual.subtract(laiMean).divide(laiStd).abs()
+        ).gte(2), 'Alerta Crítica',
+        ee.Algorithms.If(
+          cabActual.subtract(cabMean).divide(cabStd).abs().max(
+            laiActual.subtract(laiMean).divide(laiStd).abs()
+          ).gte(1), 'Precaución', 'Normal'
+        )
+      ),
+      'Normal'  // Sin datos → Normal (no hay estrés si no hay observación)
     );
 
     return ee.Feature(null, {
