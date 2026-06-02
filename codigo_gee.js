@@ -127,64 +127,46 @@ var weeklyComposites = ee.ImageCollection.fromImages(
   })
 );
 
-// Savitzky-Golay 5-point quadratic smoothing coefficients: [-3,12,17,12,-3]/35
+// Savitzky-Golay 5-point quadratic smoothing: [-3,12,17,12,-3]/35
 // (sg_window=5, sg_degree=2)
-var sgCoeffs = ee.List([-3, 12, 17, 12, -3]).map(function(c) {
-  return ee.Number(c).divide(35);
-});
-
-// Temporal join for ±2 weeks (5-point window)
-var sgTimeFilter = ee.Filter.maxDifference({
-  difference: 2 * 7 * 24 * 60 * 60 * 1000, // 2 weeks in milliseconds
-  leftField: 'system:time_start',
-  rightField: 'system:time_start'
-});
-
-var sgJoin = ee.Join.saveAll({
-  matchesKey: 'neighbors',
-  ordering: 'system:time_start',
-  ascending: true
-});
-
-var joinedWeekly = sgJoin.apply(weeklyComposites, weeklyComposites, sgTimeFilter);
-
-var sgSmoothed = joinedWeekly.map(function(image) {
-  var neighbors = ee.List(image.get('neighbors'));
-  var n = neighbors.size();
-  var week = ee.Number(image.get('week'));
-  var hasData = ee.Number(image.get('has_data')).eq(1);
-  
-  // Edge case: boundary weeks use wider window (fallback to median of neighbors)
-  var isBoundary = week.lt(2).or(week.gt(semanasTotal.subtract(3)));
-  
-  var smoothed = ee.Image(ee.Algorithms.If(
-    n.gte(5).and(isBoundary.not()).and(hasData),
-    // Apply Savitzky-Golay coefficients explicitly (equivalente a reduceNeighborhood temporal)
-    (function() {
-      var w0 = ee.Number(sgCoeffs.get(0));
-      var w1 = ee.Number(sgCoeffs.get(1));
-      var w2 = ee.Number(sgCoeffs.get(2));
-      var w3 = ee.Number(sgCoeffs.get(3));
-      var w4 = ee.Number(sgCoeffs.get(4));
-      
-      var img0 = ee.Image(neighbors.get(0)).multiply(w0);
-      var img1 = ee.Image(neighbors.get(1)).multiply(w1);
-      var img2 = ee.Image(neighbors.get(2)).multiply(w2);
-      var img3 = ee.Image(neighbors.get(3)).multiply(w3);
-      var img4 = ee.Image(neighbors.get(4)).multiply(w4);
-      
-      return img0.add(img1).add(img2).add(img3).add(img4);
-    })(),
-    // Fallback: median of available neighbors (wider window for boundaries)
-    ee.ImageCollection(neighbors).median()
-  ));
-  
-  return smoothed
-    .set('system:time_start', image.get('system:time_start'))
-    .set('week', week)
-    .set('interpolated', image.get('interpolated'))
-    .set('has_data', image.get('has_data'));
-});
+// Cada imagen en weeklyComposites tiene 5 bandas: NDVI_Mask, NDRE, LAI_RedEdge, Cab_RedEdge, Kc_Actual
+// S-G ponderado por semana reemplaza la mediana simple respetando la tendencia fenológica
+var sgSmoothed = ee.ImageCollection.fromImages(
+  listaSemanas.map(function(w) {
+    var inicioSemana = ee.Date(startDate).advance(w, 'week');
+    var weekNum = ee.Number(w);
+    var isBoundary = weekNum.lt(2).or(weekNum.gt(semanasTotal.subtract(3)));
+    
+    // Ventana ±2 semanas para S-G de 5 puntos
+    var winStart = inicioSemana.advance(-2, 'week');
+    var winEnd = inicioSemana.advance(2, 'week');
+    var windowCol = weeklyComposites.filterDate(winStart, winEnd);
+    var nWin = windowCol.size();
+    var semanaActual = weeklyComposites.filterDate(inicioSemana, inicioSemana.advance(1, 'week'));
+    var hasData = semanaActual.size().gt(0);
+    
+    // S-G coeffs directos como números
+    var c0 = -3/35, c1 = 12/35, c2 = 17/35, c3 = 12/35, c4 = -3/35;
+    var imgList = windowCol.toList(5);
+    
+    // Aplicar S-G solo si hay 5 imágenes en ventana y no es borde
+    var smoothed = ee.Image(ee.Algorithms.If(
+      nWin.gte(5).and(isBoundary.not()),
+      ee.Image(imgList.get(0)).multiply(c0).add(
+        ee.Image(imgList.get(1)).multiply(c1)).add(
+        ee.Image(imgList.get(2)).multiply(c2)).add(
+        ee.Image(imgList.get(3)).multiply(c3)).add(
+        ee.Image(imgList.get(4)).multiply(c4)),
+      // Borde o ventana insuficiente: mediana de lo disponible
+      windowCol.median()
+    ));
+    
+    return smoothed
+      .set('system:time_start', inicioSemana.millis())
+      .set('week', w)
+      .set('interpolated', hasData.not());
+  })
+);
 
 // Generar la serie continua (1 dato regularizado por semana) con estadísticas históricas
 var serieSemanal = sgSmoothed.map(function(image) {
