@@ -122,6 +122,16 @@ var weeklyComposites = ee.ImageCollection.fromImages(
       .set('week', w)
       .set('has_data', hasData)
       .set('interpolated', hasData.not());
+
+    // Contar pixeles validos sobre las parcelas para detectar semanas con datos reales
+    var pixelCount = composite.select('NDRE').reduceRegion({
+      reducer: ee.Reducer.count(),
+      geometry: parcelas.geometry(),
+      scale: 10,
+      maxPixels: 1e5
+    });
+    var hasRealData = ee.Number(pixelCount.get('NDRE')).gt(0);
+    composite = composite.set('has_real_data', hasRealData);
     
     return composite;
   })
@@ -142,9 +152,9 @@ var sgSmoothed = ee.ImageCollection.fromImages(
     var winEnd = inicioSemana.advance(2, 'week');
     var windowCol = weeklyComposites.filterDate(winStart, winEnd);
     var nWin = windowCol.size();
-    // Usar coleccionProcesada ORIGINAL para detectar semanas sin datos reales
-    var colSemanaOriginal = coleccionProcesada.filterDate(inicioSemana, inicioSemana.advance(1, 'week'));
-    var hasData = colSemanaOriginal.size().gt(0);
+    // Leer el flag de datos reales del composite semanal (conteo de pixeles validos)
+    var semanaImgData = weeklyComposites.filterDate(inicioSemana, inicioSemana.advance(1, 'week')).first();
+    var hasData = ee.Number(ee.Image(semanaImgData).get('has_real_data')).gt(0);
     
     // S-G coeffs directos como nÃºmeros
     var c0 = -3/35, c1 = 12/35, c2 = 17/35, c3 = 12/35, c4 = -3/35;
@@ -166,6 +176,16 @@ var sgSmoothed = ee.ImageCollection.fromImages(
       .set('system:time_start', inicioSemana.millis())
       .set('week', w)
       .set('interpolated', hasData.not());
+
+    // Contar pixeles validos sobre las parcelas para detectar semanas con datos reales
+    var pixelCount = composite.select('NDRE').reduceRegion({
+      reducer: ee.Reducer.count(),
+      geometry: parcelas.geometry(),
+      scale: 10,
+      maxPixels: 1e5
+    });
+    var hasRealData = ee.Number(pixelCount.get('NDRE')).gt(0);
+    composite = composite.set('has_real_data', hasRealData);
   })
 );
 
