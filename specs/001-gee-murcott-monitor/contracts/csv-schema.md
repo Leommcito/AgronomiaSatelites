@@ -1,6 +1,6 @@
 ﻿# CSV Schema Contract: Dataset_Fenologico_Mandarina_Estandarizado
 
-**Version**: 1.0.0
+****Version**: 1.1.0
 **Format**: CSV (comma-separated values), UTF-8 encoding, header row present
 **Delimiter**: comma (,)
 **Line ending**: LF (Unix-style)
@@ -17,12 +17,16 @@
 | 5 | Kc_Actual | Float | [0.2, 1.3] | Yes* |
 | 6 | Flag_Interpolacion | Integer | 0 or 1 | No |
 | 7 | Alerta_Estres | String | Normal/Precaucion/Alerta Critica | No |
+| 8 | NDRE | Float | [0.1, 0.6] | Yes* |
+| 9 | MSAVI2 | Float | [0.2, 0.8] | Yes* |
+| 10 | S2REP | Float | [705, 740] | Yes* |
+| 11 | NDVI | Float | [-1, 1] | Yes* |
 
 *Nullable only at period boundaries (first/last weeks with insufficient data)
 
 ## Row Count
 
-Expected: 4 parcels x ~78 weeks = ~312 rows (before null filtering at boundaries)
+Expected: 4 parcels x ~78 weeks = ~312 rows (11 columns each) (before null filtering at boundaries)
 
 ## Integrity Rules
 

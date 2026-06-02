@@ -1,8 +1,8 @@
-// ==============================================================================
-// ANÁLISIS DE MANDARINA MURCOTT - METODOLOGÍA DEL DOCUMENTO (2025-2026)
+﻿// ==============================================================================
+// ANÃLISIS DE MANDARINA MURCOTT - METODOLOGÃA DEL DOCUMENTO (2025-2026)
 // ==============================================================================
 
-// 0. PARÁMETROS CONFIGURABLES
+// 0. PARÃMETROS CONFIGURABLES
 var LAI_factor = 0.15;
 var Cab_factor = 2;
 var kc_slope = 1.15;
@@ -10,15 +10,15 @@ var kc_intercept = 0.1;
 var sg_window = 5;
 var sg_degree = 2;
 
-// 1. CONFIGURACIÓN INICIAL Y ÁREA DE ESTUDIO
+// 1. CONFIGURACIÃ“N INICIAL Y ÃREA DE ESTUDIO
 var startDate = '2025-01-01';
 var endDate = '2026-06-01'; 
 
-// Importar el Shapefile de las 4 parcelas (Geometría original conservada sin retracción)
+// Importar el Shapefile de las 4 parcelas (GeometrÃ­a original conservada sin retracciÃ³n)
 var parcelas = ee.FeatureCollection('projects/proyectoleomespinosa/assets/ParcelasDefinidas');
 
 Map.centerObject(parcelas, 16);
-Map.addLayer(parcelas, {color: 'red'}, 'Parcelas de Análisis (Originales)');
+Map.addLayer(parcelas, {color: 'red'}, 'Parcelas de AnÃ¡lisis (Originales)');
 
 // ==============================================================================
 // 2. PRE-PROCESAMIENTO: L2A Y DOBLE FILTRADO (CS+ Y SCL)
@@ -35,7 +35,7 @@ function enmascararNubesDobleFiltro(image) {
   // Filtro 1: Cloud Score+ Estricto (> 0.90 como exige el documento)
   var csMask = image.select('cs_cdf').gte(0.90);
   
-  // Filtro 2: Scene Classification Layer (SCL) - Solo Vegetación (4) y Suelo (5)
+  // Filtro 2: Scene Classification Layer (SCL) - Solo VegetaciÃ³n (4) y Suelo (5)
   var scl = image.select('SCL');
   var sclMask = scl.eq(4).or(scl.eq(5));
 
@@ -43,10 +43,10 @@ function enmascararNubesDobleFiltro(image) {
 }
 
 // ==============================================================================
-// 3. CÁLCULO DE ÍNDICES: RED-EDGE Y CUANTIFICACIÓN BIOFÍSICA
+// 3. CÃLCULO DE ÃNDICES: RED-EDGE Y CUANTIFICACIÃ“N BIOFÃSICA
 // ==============================================================================
 function calcularMetricas(image) {
-  // Extraer y escalar bandas ópticas (Sentinel-2 L2A viene multiplicado por 10000)
+  // Extraer y escalar bandas Ã³pticas (Sentinel-2 L2A viene multiplicado por 10000)
   var imgScaled = image.select(['B4', 'B5', 'B6', 'B7', 'B8']).divide(10000);
   
   var b4 = imgScaled.select('B4'); // Rojo
@@ -55,33 +55,33 @@ function calcularMetricas(image) {
   var b7 = imgScaled.select('B7'); // Red Edge 3
   var b8 = imgScaled.select('B8'); // NIR
 
-  // NDVI binary mask para filtrado de vegetación únicamente (NO estimación biofísica)
+  // NDVI binary mask para filtrado de vegetaciÃ³n Ãºnicamente (NO estimaciÃ³n biofÃ­sica)
   var ndviMask = imgScaled.normalizedDifference(['B8', 'B4']).rename('NDVI_Mask');
 
-  // Índice NDRE para seguimiento visual y validación cruzada
+  // Ãndice NDRE para seguimiento visual y validaciÃ³n cruzada
   var ndre = imgScaled.normalizedDifference(['B8', 'B5']).rename('NDRE');
 
-  // Posición del Borde Rojo (S2REP) - Fórmula ESTÁNDAR de interpolación lineal
+  // PosiciÃ³n del Borde Rojo (S2REP) - FÃ³rmula ESTÃNDAR de interpolaciÃ³n lineal
   var denom = b6.subtract(b5);
   var s2rep = imgScaled.expression(
     '705 + 35 * (((B4+B7)/2 - B5) / (B6 - B5))',
     {'B4': b4, 'B5': b5, 'B6': b6, 'B7': b7}
   ).rename('S2REP');
   
-  // Edge case: null S2REP skip pixel (evitar división por cero)
+  // Edge case: null S2REP skip pixel (evitar divisiÃ³n por cero)
   var s2repValid = s2rep.updateMask(denom.abs().gt(0.0001));
 
-  // Modelado de Clorofila (Cab) y LAI basado en la sensibilidad del S2REP (parámetros configurables)
+  // Modelado de Clorofila (Cab) y LAI basado en la sensibilidad del S2REP (parÃ¡metros configurables)
   var cab = s2repValid.subtract(700).multiply(Cab_factor).rename('Cab_RedEdge');
   var laiRedEdge = s2repValid.subtract(700).multiply(LAI_factor).rename('LAI_RedEdge');
 
-  // MSAVI2 (Mitigación de ruido de fondo / maleza)
+  // MSAVI2 (MitigaciÃ³n de ruido de fondo / maleza)
   var msavi2 = imgScaled.expression(
     '(2 * NIR + 1 - sqrt(pow((2 * NIR + 1), 2) - 8 * (NIR - RED))) / 2', 
     {'NIR': b8, 'RED': b4}
   ).rename('MSAVI2');
 
-  // Kc Actual (Coeficiente de Cultivo basado en el MSAVI2 purificado, parámetros configurables)
+  // Kc Actual (Coeficiente de Cultivo basado en el MSAVI2 purificado, parÃ¡metros configurables)
   var kc = msavi2.multiply(kc_slope).add(kc_intercept).rename('Kc_Actual');
 
   return image.addBands([ndviMask, ndre, s2repValid, cab, laiRedEdge, msavi2, kc])
@@ -90,12 +90,12 @@ function calcularMetricas(image) {
 
 var coleccionProcesada = s2Vinculada.map(enmascararNubesDobleFiltro)
                                     .map(calcularMetricas)
-                                    .select(['NDVI_Mask', 'NDRE', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual']);
+                                    .select(['NDVI_Mask', 'NDRE', 'S2REP', 'LAI_RedEdge', 'Cab_RedEdge', 'MSAVI2', 'Kc_Actual']);
 
 // ==============================================================================
-// 4. RECONSTRUCCIÓN TEMPORAL SEMANAL Y ALERTA DE ESTRÉS (GAP-FILLING SAVITZKY-GOLAY)
+// 4. RECONSTRUCCIÃ“N TEMPORAL SEMANAL Y ALERTA DE ESTRÃ‰S (GAP-FILLING SAVITZKY-GOLAY)
 // ==============================================================================
-// Calcular la media y desviación estándar histórica para LAI y Cab (Alerta Temprana Fitosanitaria)
+// Calcular la media y desviaciÃ³n estÃ¡ndar histÃ³rica para LAI y Cab (Alerta Temprana Fitosanitaria)
 var imgPromedioCab = coleccionProcesada.select('Cab_RedEdge').mean().rename('Cab_Mean');
 var imgStdDevCab = coleccionProcesada.select('Cab_RedEdge').reduce(ee.Reducer.stdDev()).rename('Cab_Std');
 var imgPromedioLai = coleccionProcesada.select('LAI_RedEdge').mean().rename('LAI_Mean');
@@ -117,7 +117,7 @@ var weeklyComposites = ee.ImageCollection.fromImages(
     var composite = ee.Image(ee.Algorithms.If(
       hasData,
       colSemana.median(),
-      ee.Image.constant([0, 0, 0, 0, 0]).rename(['NDVI_Mask', 'NDRE', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual']).updateMask(0)
+      ee.Image.constant([0, 0, 0, 0, 0, 0, 0]).rename(['NDVI_Mask', 'NDRE', 'S2REP', 'LAI_RedEdge', 'Cab_RedEdge', 'MSAVI2', 'Kc_Actual']).updateMask(0)
     )).set('system:time_start', inicioSemana.millis())
       .set('week', w)
       .set('has_data', hasData)
@@ -129,15 +129,15 @@ var weeklyComposites = ee.ImageCollection.fromImages(
 
 // Savitzky-Golay 5-point quadratic smoothing: [-3,12,17,12,-3]/35
 // (sg_window=5, sg_degree=2)
-// Cada imagen en weeklyComposites tiene 5 bandas: NDVI_Mask, NDRE, LAI_RedEdge, Cab_RedEdge, Kc_Actual
-// S-G ponderado por semana reemplaza la mediana simple respetando la tendencia fenológica
+// Cada imagen en weeklyComposites tiene 7 bandas: NDVI_Mask, NDRE, S2REP, LAI_RedEdge, Cab_RedEdge, MSAVI2, Kc_Actual
+// S-G ponderado por semana reemplaza la mediana simple respetando la tendencia fenolÃ³gica
 var sgSmoothed = ee.ImageCollection.fromImages(
   listaSemanas.map(function(w) {
     var inicioSemana = ee.Date(startDate).advance(w, 'week');
     var weekNum = ee.Number(w);
     var isBoundary = weekNum.lt(2).or(weekNum.gt(semanasTotal.subtract(3)));
     
-    // Ventana ±2 semanas para S-G de 5 puntos
+    // Ventana Â±2 semanas para S-G de 5 puntos
     var winStart = inicioSemana.advance(-2, 'week');
     var winEnd = inicioSemana.advance(2, 'week');
     var windowCol = weeklyComposites.filterDate(winStart, winEnd);
@@ -145,11 +145,11 @@ var sgSmoothed = ee.ImageCollection.fromImages(
     var semanaActual = weeklyComposites.filterDate(inicioSemana, inicioSemana.advance(1, 'week'));
     var hasData = semanaActual.size().gt(0);
     
-    // S-G coeffs directos como números
+    // S-G coeffs directos como nÃºmeros
     var c0 = -3/35, c1 = 12/35, c2 = 17/35, c3 = 12/35, c4 = -3/35;
     var imgList = windowCol.toList(5);
     
-    // Aplicar S-G solo si hay 5 imágenes en ventana y no es borde
+    // Aplicar S-G solo si hay 5 imÃ¡genes en ventana y no es borde
     var smoothed = ee.Image(ee.Algorithms.If(
       nWin.gte(5).and(isBoundary.not()),
       ee.Image(imgList.get(0)).multiply(c0).add(
@@ -168,11 +168,11 @@ var sgSmoothed = ee.ImageCollection.fromImages(
   })
 );
 
-// Generar la serie continua (1 dato regularizado por semana) con estadísticas históricas
+// Generar la serie continua (1 dato regularizado por semana) con estadÃ­sticas histÃ³ricas
 var serieSemanal = sgSmoothed.map(function(image) {
   var inicioSemana = ee.Date(image.get('system:time_start'));
   
-  // Anexar memoria histórica para comparar
+  // Anexar memoria histÃ³rica para comparar
   var imgConHistoria = image.addBands([imgPromedioCab, imgStdDevCab, imgPromedioLai, imgStdDevLai]);
 
   var estadisticas = imgConHistoria.reduceRegions({
@@ -182,7 +182,7 @@ var serieSemanal = sgSmoothed.map(function(image) {
   });
 
   return estadisticas.map(function(f) {
-    // Sistema de Alerta Temprana de 3 niveles (Normal, Precaución, Alerta Crítica)
+    // Sistema de Alerta Temprana de 3 niveles (Normal, PrecauciÃ³n, Alerta CrÃ­tica)
     // Basado en z-score de LAI_RedEdge Y Cab_RedEdge
     var cabActual = ee.Number(f.get('Cab_RedEdge'));
     var laiActual = ee.Number(f.get('LAI_RedEdge'));
@@ -191,20 +191,20 @@ var serieSemanal = sgSmoothed.map(function(image) {
     var laiMean = ee.Number(f.get('LAI_Mean'));
     var laiStd = ee.Number(f.get('LAI_Std'));
     
-    // Estrés 3 niveles, SOLO si hay datos válidos (cabActual no nulo)
+    // EstrÃ©s 3 niveles, SOLO si hay datos vÃ¡lidos (cabActual no nulo)
     var estres = ee.Algorithms.If(
-      cabActual,  // GEE evalúa el else si cabActual es null
+      cabActual,  // GEE evalÃºa el else si cabActual es null
       ee.Algorithms.If(
         cabActual.subtract(cabMean).divide(cabStd).abs().max(
           laiActual.subtract(laiMean).divide(laiStd).abs()
-        ).gte(2), 'Alerta Crítica',
+        ).gte(2), 'Alerta CrÃ­tica',
         ee.Algorithms.If(
           cabActual.subtract(cabMean).divide(cabStd).abs().max(
             laiActual.subtract(laiMean).divide(laiStd).abs()
-          ).gte(1), 'Precaución', 'Normal'
+          ).gte(1), 'PrecauciÃ³n', 'Normal'
         )
       ),
-      'Normal'  // Sin datos → Normal (no hay estrés si no hay observación)
+      'Normal'  // Sin datos â†’ Normal (no hay estrÃ©s si no hay observaciÃ³n)
     );
 
     return ee.Feature(null, {
@@ -214,7 +214,11 @@ var serieSemanal = sgSmoothed.map(function(image) {
       'Cab_RedEdge': cabActual,
       'Kc_Actual': f.get('Kc_Actual'),
       'Flag_Interpolacion': ee.Algorithms.If(image.get('interpolated'), 1, 0), // 0=Real, 1=Interpolado
-      'Alerta_Estres': estres
+      'Alerta_Estres': estres,
+        'NDRE': f.get('NDRE'),
+        'MSAVI2': f.get('MSAVI2'),
+        'S2REP': f.get('S2REP'),
+        'NDVI': f.get('NDVI_Mask')
     });
   });
 }).flatten();
@@ -228,11 +232,11 @@ Export.table.toDrive({
   folder: 'Tesis_Mandarinas',
   fileFormat: 'CSV',
   // Exportar el CSV exactamente con la estructura demandada (7 columnas)
-  selectors: ['Fecha_Semanal', 'ID_Parcela', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual', 'Flag_Interpolacion', 'Alerta_Estres']
+  selectors: ['Fecha_Semanal', 'ID_Parcela', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual', 'Flag_Interpolacion', 'Alerta_Estres', 'NDRE', 'MSAVI2', 'S2REP', 'NDVI']
 });
 
 // ==============================================================================
-// 5. HITOS FENOLÓGICOS: EXPORTACIÓN ESPACIAL (SOLO OBSERVACIONES REALES)
+// 5. HITOS FENOLÃ“GICOS: EXPORTACIÃ“N ESPACIAL (SOLO OBSERVACIONES REALES)
 // ==============================================================================
 var paletaVigor = ['#d73027', '#fc8d59', '#fee08b', '#d9ef8b', '#91cf60', '#1a9850'];
 
@@ -280,7 +284,7 @@ var listaVideo = listaSemanas.map(function(w) {
   
   var ndreVisual = imgSemana.select('NDRE').visualize({min: 0.1, max: 0.6, palette: paletaVigor});
   
-  // Tamaño de texto reducido a la escala 2 y fontSize 14
+  // TamaÃ±o de texto reducido a la escala 2 y fontSize 14
   var fechaString = inicioSemana.format('YYYY-MM-dd');
   var textImg = text.draw(fechaString, ptTextoDesplazado, 2, { 
     fontSize: 14, textColor: 'ffffff', outlineColor: '000000', outlineWidth: 2
@@ -307,7 +311,7 @@ Export.video.toDrive({
 });
 
 // ==============================================================================
-// 7. VALIDACIÓN POR CONSOLA (PRINT)
+// 7. VALIDACIÃ“N POR CONSOLA (PRINT)
 // ==============================================================================
 print('Image count before filter:', s2.filterBounds(parcelas).filterDate(startDate, endDate).size());
 print('Image count after filter:', coleccionProcesada.size());
@@ -336,4 +340,4 @@ var alertCounts = serieLimpia.reduceColumns({
 });
 print('Alert counts by level:', alertCounts);
 
-print('✅ Metodología completa implementada. Revisa la pestaña Tasks.');
+print('âœ… MetodologÃ­a completa implementada. Revisa la pestaÃ±a Tasks.');
