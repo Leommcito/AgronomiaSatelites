@@ -142,8 +142,9 @@ var sgSmoothed = ee.ImageCollection.fromImages(
     var winEnd = inicioSemana.advance(2, 'week');
     var windowCol = weeklyComposites.filterDate(winStart, winEnd);
     var nWin = windowCol.size();
-    var semanaActual = weeklyComposites.filterDate(inicioSemana, inicioSemana.advance(1, 'week'));
-    var hasData = semanaActual.size().gt(0);
+    // Usar coleccionProcesada ORIGINAL para detectar semanas sin datos reales
+    var colSemanaOriginal = coleccionProcesada.filterDate(inicioSemana, inicioSemana.advance(1, 'week'));
+    var hasData = colSemanaOriginal.size().gt(0);
     
     // S-G coeffs directos como nÃºmeros
     var c0 = -3/35, c1 = 12/35, c2 = 17/35, c3 = 12/35, c4 = -3/35;
@@ -231,7 +232,7 @@ Export.table.toDrive({
   description: 'Dataset_Fenologico_Mandarina_Estandarizado',
   folder: 'Tesis_Mandarinas',
   fileFormat: 'CSV',
-  // Exportar el CSV exactamente con la estructura demandada (7 columnas)
+  // Exportar el CSV con 11 columnas (7 originales + NDRE, MSAVI2, S2REP, NDVI)
   selectors: ['Fecha_Semanal', 'ID_Parcela', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual', 'Flag_Interpolacion', 'Alerta_Estres', 'NDRE', 'MSAVI2', 'S2REP', 'NDVI']
 });
 
