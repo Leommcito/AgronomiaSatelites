@@ -396,8 +396,10 @@ var csvCompleto = ee.FeatureCollection(
       img.addBands([ndvi, ndre, s2repValid, cab, lai, msavi2, kc])
     ).copyProperties(img, ['system:time_start']);
 
-    // Aplicar máscara de nubes a las métricas (null donde hay nubes)
-    var mascara = enmascararNubesDobleFiltro(img).mask();
+    // Aplicar máscara de nubes a las métricas (1 banda, null donde hay nubes)
+    var mascara = img.select('cs_cdf').gte(0.90).and(
+      img.select('SCL').eq(4).or(img.select('SCL').eq(5))
+    );
     imgConMetricas = ee.Image(imgConMetricas).updateMask(mascara);
 
     // Agregar cs_cdf original (sin máscara) para estadísticas de nubosidad
