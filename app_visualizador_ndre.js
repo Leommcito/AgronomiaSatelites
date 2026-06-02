@@ -173,6 +173,25 @@ ui.root.add(mapa);
 // ---------------------------------------------------------------------------
 print('Visualizador NDRE - Imagenes crudas');
 print('Rango: ' + startDate + ' a ' + endDate);
-print('Usa el slider para navegar entre fechas.');
+print('');
+print('--- STACK MULTIBANDA PARA QGIS ---');
+print('Cada banda del GeoTIFF = NDRE de una fecha.');
+print('En QGIS: abrir .tif, activar Temporal Controller (Ver > Paneles).');
+print('');
+
+// Stack multibanda: convierte todas las imagenes NDRE en una sola imagen
+// donde cada banda = una fecha distinta
+var ndreStack = ndreCol.toBands();
+
+Export.image.toDrive({
+  image: ndreStack.toFloat(),
+  description: 'Stack_NDRE_TodasLasFechas',
+  folder: 'Tesis_Mandarinas',
+  scale: 10,
+  region: parcelas.geometry().bounds(),
+  maxPixels: 1e10
+});
+
+print('Stack NDRE listo. Revisar pestaña Tasks para exportar.');
 print('');
 print('Para publicar: Apps > New App > seleccionar script > Publish');
