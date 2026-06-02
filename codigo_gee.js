@@ -419,11 +419,11 @@ var csvCompleto = ee.FeatureCollection(
       var pixClaros = ee.Number(f.get('NDRE_count'));
       var pixTotales = ee.Number(f.get('cs_cdf_raw_count'));
       var pixNublados = pixTotales.subtract(pixClaros);
-      var porcClaros = ee.Algorithms.If(
+      var porcClaros = ee.Number(ee.Algorithms.If(
         pixTotales.gt(0),
         pixClaros.divide(pixTotales).multiply(100),
         0
-      );
+      ));
 
       var estado = ee.Algorithms.If(
         porcClaros.gte(70), 'Despejado',
