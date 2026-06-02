@@ -117,7 +117,7 @@ var weeklyComposites = ee.ImageCollection.fromImages(
     var composite = ee.Image(ee.Algorithms.If(
       hasData,
       colSemana.median(),
-      ee.Image.constant(0).rename(['NDVI_Mask', 'NDRE', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual']).updateMask(0)
+      ee.Image.constant([0, 0, 0, 0, 0]).rename(['NDVI_Mask', 'NDRE', 'LAI_RedEdge', 'Cab_RedEdge', 'Kc_Actual']).updateMask(0)
     )).set('system:time_start', inicioSemana.millis())
       .set('week', w)
       .set('has_data', hasData)
