@@ -20,8 +20,8 @@
 
 **Purpose**: Script bootstrap — configurable parameters, asset import, date range definition.
 
-- [ ] T001 Create script header with metadata comment block, configurable parameter constants (startDate, endDate, LAI_factor, Cab_factor, kc_slope, kc_intercept, sg_window, sg_degree) at top of `codigo_gee.js`
-- [ ] T002 Import parcel FeatureCollection from asset `projects/proyectoleomespinosa/assets/ParcelasDefinidas` and center map view in `codigo_gee.js`
+- [x] T001 Create script header with metadata comment block, configurable parameter constants (startDate, endDate, LAI_factor, Cab_factor, kc_slope, kc_intercept, sg_window, sg_degree) at top of `codigo_gee.js`
+- [x] T002 Import parcel FeatureCollection from asset `projects/proyectoleomespinosa/assets/ParcelasDefinidas` and center map view in `codigo_gee.js`
 
 ---
 
@@ -29,8 +29,8 @@
 
 **Purpose**: Core functions used by ALL user stories. MUST complete before any user story.
 
-- [ ] T003 Link Sentinel-2 L2A collection (`COPERNICUS/S2_SR_HARMONIZED`) with Cloud Score+ (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`) via `linkCollection` in `codigo_gee.js`
-- [ ] T004 Implement `enmascararNubesDobleFiltro()` function: CS+ mask (`cs_cdf >= 0.90`) AND SCL mask (classes 4,5 only) via `updateMask()` in `codigo_gee.js`
+- [x] T003 Link Sentinel-2 L2A collection (`COPERNICUS/S2_SR_HARMONIZED`) with Cloud Score+ (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`) via `linkCollection` in `codigo_gee.js`
+- [x] T004 Implement `enmascararNubesDobleFiltro()` function: CS+ mask (`cs_cdf >= 0.90`) AND SCL mask (classes 4,5 only) via `updateMask()` in `codigo_gee.js`
 
 **Checkpoint**: Foundation ready — image collection loaded, double filter applied. User stories can begin.
 
@@ -44,9 +44,9 @@
 
 ### Implementation for US1
 
-- [ ] T005 [US1] Apply double filter to linked collection via `.map(enmascararNubesDobleFiltro)` and store as `coleccionFiltrada` in `codigo_gee.js`
-- [ ] T006 [US1] Implement `calcularMetricas()` function: scale optical bands (B4,B5,B6,B7,B8) dividing by 10000, extract scaled band variables (b4,b5,b6,b7,b8) in `codigo_gee.js`
-- [ ] T007 [US1] Add console report: original image count vs post-filter count with `print()` for quality traceability per FR-003 in `codigo_gee.js`
+- [x] T005 [US1] Apply double filter to linked collection via `.map(enmascararNubesDobleFiltro)` and store as `coleccionFiltrada` in `codigo_gee.js`
+- [x] T006 [US1] Implement `calcularMetricas()` function: scale optical bands (B4,B5,B6,B7,B8) dividing by 10000, extract scaled band variables (b4,b5,b6,b7,b8) in `codigo_gee.js`
+- [x] T007 [US1] Add console report: original image count vs post-filter count with `print()` for quality traceability per FR-003 in `codigo_gee.js`
 
 **Checkpoint**: US1 complete — filtered collection ready, band scaling applied. Verify with `print()` in GEE Console.
 
@@ -60,10 +60,10 @@
 
 ### Implementation for US2
 
-- [ ] T008 [US2] Calculate NDVI as binary mask: `(B8-B4)/(B8+B4) > 0.3` renamed as `NDVI_Mask` — only for vegetation masking, NOT biophysical estimation in `codigo_gee.js`
-- [ ] T009 [US2] Calculate NDRE using `normalizedDifference(['B8','B5'])` renamed as `NDRE` for visualization and cross-validation in `codigo_gee.js`
-- [ ] T010 [US2] Calculate S2REP using standard formula: `705 + 35 * (((B4+B7)/2 - B5) / (B6 - B5))` with `expression()`, renamed as `S2REP` per FR-006 in `codigo_gee.js`
-- [ ] T011 [US2] Calculate MSAVI2 using expression: `(2*NIR + 1 - sqrt(pow((2*NIR+1),2) - 8*(NIR-RED))) / 2`, renamed as `MSAVI2` in `codigo_gee.js`
+- [x] T008 [US2] Calculate NDVI as binary mask: `(B8-B4)/(B8+B4) > 0.3` renamed as `NDVI_Mask` — only for vegetation masking, NOT biophysical estimation in `codigo_gee.js`
+- [x] T009 [US2] Calculate NDRE using `normalizedDifference(['B8','B5'])` renamed as `NDRE` for visualization and cross-validation in `codigo_gee.js`
+- [x] T010 [US2] Calculate S2REP using standard formula: `705 + 35 * (((B4+B7)/2 - B5) / (B6 - B5))` with `expression()`, renamed as `S2REP` per FR-006 in `codigo_gee.js`
+- [x] T011 [US2] Calculate MSAVI2 using expression: `(2*NIR + 1 - sqrt(pow((2*NIR+1),2) - 8*(NIR-RED))) / 2`, renamed as `MSAVI2` in `codigo_gee.js`
 
 **Checkpoint**: US2 complete — all 4 indices calculated. Verify ranges in Console.
 
@@ -77,10 +77,10 @@
 
 ### Implementation for US3
 
-- [ ] T012 [US3] Calculate LAI_RedEdge using configurable formula: `(S2REP - 700) * LAI_factor`, renamed as `LAI_RedEdge`. Factor default: 0.15 per FR-006 in `codigo_gee.js`
-- [ ] T013 [US3] Calculate Cab_RedEdge using configurable formula: `(S2REP - 700) * Cab_factor`, renamed as `Cab_RedEdge`. Factor default: 2 per FR-006 in `codigo_gee.js`
-- [ ] T014 [US3] Calculate Kc_Actual using configurable formula: `MSAVI2 * kc_slope + kc_intercept`, renamed as `Kc_Actual`. Defaults: slope=1.15, intercept=0.1 per FR-007 in `codigo_gee.js`
-- [ ] T015 [US3] Chain all index and biophysical calculations in `calcularMetricas()`, add bands to image, copy `system:time_start` property in `codigo_gee.js`
+- [x] T012 [US3] Calculate LAI_RedEdge using configurable formula: `(S2REP - 700) * LAI_factor`, renamed as `LAI_RedEdge`. Factor default: 0.15 per FR-006 in `codigo_gee.js`
+- [x] T013 [US3] Calculate Cab_RedEdge using configurable formula: `(S2REP - 700) * Cab_factor`, renamed as `Cab_RedEdge`. Factor default: 2 per FR-006 in `codigo_gee.js`
+- [x] T014 [US3] Calculate Kc_Actual using configurable formula: `MSAVI2 * kc_slope + kc_intercept`, renamed as `Kc_Actual`. Defaults: slope=1.15, intercept=0.1 per FR-007 in `codigo_gee.js`
+- [x] T015 [US3] Chain all index and biophysical calculations in `calcularMetricas()`, add bands to image, copy `system:time_start` property in `codigo_gee.js`
 
 **Checkpoint**: US3 complete — biophysical variables calculated. Configurable at script top.
 
@@ -94,10 +94,10 @@
 
 ### Implementation for US4
 
-- [ ] T016 [US4] Build weekly sequence: calculate total weeks from startDate to endDate, generate `listaSemanas` via `ee.List.sequence()` in `codigo_gee.js`
-- [ ] T017 [US4] Implement weekly aggregation: for each week, filter collection, compute `median()` as representative pixel value per parcel using `reduceRegions()` with `ee.Reducer.mean()` at scale 10 in `codigo_gee.js`
-- [ ] T018 [US4] Implement Savitzky-Golay filter for gap-filling: apply temporal smoothing with window=5, degree=2 over the weekly series via `ee.Reducer` or iterative linear fit per research.md decision 2 in `codigo_gee.js`
-- [ ] T019 [US4] Set `Flag_Interpolacion`: 0 when `colSemana.size().gt(0)` (real observation), 1 otherwise (gap-filled). Add as property per FR-011 in `codigo_gee.js`
+- [x] T016 [US4] Build weekly sequence: calculate total weeks from startDate to endDate, generate `listaSemanas` via `ee.List.sequence()` in `codigo_gee.js`
+- [x] T017 [US4] Implement weekly aggregation: for each week, filter collection, compute `median()` as representative pixel value per parcel using `reduceRegions()` with `ee.Reducer.mean()` at scale 10 in `codigo_gee.js`
+- [x] T018 [US4] Implement Savitzky-Golay filter for gap-filling: apply temporal smoothing with window=5, degree=2 over the weekly series via `ee.Reducer` or iterative linear fit per research.md decision 2 in `codigo_gee.js`
+- [x] T019 [US4] Set `Flag_Interpolacion`: 0 when `colSemana.size().gt(0)` (real observation), 1 otherwise (gap-filled). Add as property per FR-011 in `codigo_gee.js`
 
 **Checkpoint**: US4 complete — continuous weekly series with interpolation flags.
 
@@ -111,10 +111,10 @@
 
 ### Implementation for US5
 
-- [ ] T020 [US5] Build dynamic baseline: compute smoothed mean and stdDev from the Savitzky-Golay filtered LAI and Cab series per parcel, stored as `imgPromedio` and `imgStdDev` per FR-012 in `codigo_gee.js`
-- [ ] T021 [US5] Calculate z-score deviation: `(valorActual - mediaBase) / stdBase` for both LAI_RedEdge and Cab_RedEdge per FR-013 in `codigo_gee.js`
-- [ ] T022 [US5] Implement 3-level stress classification function: Normal (|z| < 1), Precaución (1 <= |z| < 2), Alerta Critica (|z| >= 2). Apply to each weekly record per FR-014 in `codigo_gee.js`
-- [ ] T023 [US5] Attach `Alerta_Estres` property to each Feature in the weekly series, using the maximum alert level from LAI and Cab checks per FR-014 in `codigo_gee.js`
+- [x] T020 [US5] Build dynamic baseline: compute smoothed mean and stdDev from the Savitzky-Golay filtered LAI and Cab series per parcel, stored as `imgPromedio` and `imgStdDev` per FR-012 in `codigo_gee.js`
+- [x] T021 [US5] Calculate z-score deviation: `(valorActual - mediaBase) / stdBase` for both LAI_RedEdge and Cab_RedEdge per FR-013 in `codigo_gee.js`
+- [x] T022 [US5] Implement 3-level stress classification function: Normal (|z| < 1), Precaución (1 <= |z| < 2), Alerta Critica (|z| >= 2). Apply to each weekly record per FR-014 in `codigo_gee.js`
+- [x] T023 [US5] Attach `Alerta_Estres` property to each Feature in the weekly series, using the maximum alert level from LAI and Cab checks per FR-014 in `codigo_gee.js`
 
 **Checkpoint**: US5 complete — stress alerts generated for every parcel every week.
 
@@ -128,11 +128,11 @@
 
 ### Implementation for US6
 
-- [ ] T024 [US6] Flatten weekly FeatureCollection, filter nulls (`ee.Filter.notNull(['Cab_RedEdge'])`), prepare `serieLimpia` for CSV export per FR-015 in `codigo_gee.js`
-- [ ] T025 [US6] Export CSV via `Export.table.toDrive()` with 7 selectors: Fecha_Semanal, ID_Parcela, LAI_RedEdge, Cab_RedEdge, Kc_Actual, Flag_Interpolacion, Alerta_Estres. Folder: `Tesis_Mandarinas` per FR-015 + csv-schema contract in `codigo_gee.js`
-- [ ] T026 [US6] Implement `exportarHitoFenologico()` function: filter to cloud-free dates (<10% cloud cover) within phenological window, compute median composite, export NDRE GeoTIFF via `Export.image.toDrive()` at 10m scale per FR-016 in `codigo_gee.js`
-- [ ] T027 [US6] Call `exportarHitoFenologico()` for all 3 milestones: Hito 1 (2025-07-01 to 2025-08-15), Hito 2 (2025-10-01 to 2025-11-30), Hito 3 (2026-04-01 to 2026-05-31) in `codigo_gee.js`
-- [ ] T028 [US6] Generate NDRE timelapse: for each week, create NDRE visualization frame with date text overlay (`users/gena/packages:text`), duplicate to 2 frames, collect as ImageCollection, export via `Export.video.toDrive()` at 1 FPS, 720p per FR-017 + quickstart.md in `codigo_gee.js`
+- [x] T024 [US6] Flatten weekly FeatureCollection, filter nulls (`ee.Filter.notNull(['Cab_RedEdge'])`), prepare `serieLimpia` for CSV export per FR-015 in `codigo_gee.js`
+- [x] T025 [US6] Export CSV via `Export.table.toDrive()` with 7 selectors: Fecha_Semanal, ID_Parcela, LAI_RedEdge, Cab_RedEdge, Kc_Actual, Flag_Interpolacion, Alerta_Estres. Folder: `Tesis_Mandarinas` per FR-015 + csv-schema contract in `codigo_gee.js`
+- [x] T026 [US6] Implement `exportarHitoFenologico()` function: filter to cloud-free dates (<10% cloud cover) within phenological window, compute median composite, export NDRE GeoTIFF via `Export.image.toDrive()` at 10m scale per FR-016 in `codigo_gee.js`
+- [x] T027 [US6] Call `exportarHitoFenologico()` for all 3 milestones: Hito 1 (2025-07-01 to 2025-08-15), Hito 2 (2025-10-01 to 2025-11-30), Hito 3 (2026-04-01 to 2026-05-31) in `codigo_gee.js`
+- [x] T028 [US6] Generate NDRE timelapse: for each week, create NDRE visualization frame with date text overlay (`users/gena/packages:text`), duplicate to 2 frames, collect as ImageCollection, export via `Export.video.toDrive()` at 1 FPS, 720p per FR-017 + quickstart.md in `codigo_gee.js`
 
 **Checkpoint**: US6 complete — all exports configured in Tasks tab.
 
@@ -142,8 +142,8 @@
 
 **Purpose**: Console validation reports, edge case handling, final script cleanup.
 
-- [ ] T029 Add module-by-module console validation: print image counts (M1), NDRE median parcel 1 (M2), LAI/Cab/Kc ranges (M3), interpolated weeks count (M4), alert counts by level (M5), export confirmation with task names (M6) in `codigo_gee.js`
-- [ ] T030 Handle edge cases: boundary weeks with insufficient data (use wider temporal window fallback), null S2REP values (skip pixel), zero-size collection weeks (flag as interpolated) in `codigo_gee.js`
+- [x] T029 Add module-by-module console validation: print image counts (M1), NDRE median parcel 1 (M2), LAI/Cab/Kc ranges (M3), interpolated weeks count (M4), alert counts by level (M5), export confirmation with task names (M6) in `codigo_gee.js`
+- [x] T030 Handle edge cases: boundary weeks with insufficient data (use wider temporal window fallback), null S2REP values (skip pixel), zero-size collection weeks (flag as interpolated) in `codigo_gee.js`
 
 ---
 
