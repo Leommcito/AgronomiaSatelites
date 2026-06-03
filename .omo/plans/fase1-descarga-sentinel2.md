@@ -419,6 +419,49 @@ Wave FINAL:
 
 ---
 
+- [ ] 7. **Fix: soporte para .zip en shapefile**
+
+  **What to do**:
+  - El shapefile en realidad es un conjunto de archivos (.shp, .shx, .dbf, .prj) que suelen venir comprimidos en .zip
+  - `geopandas.read_file()` puede leer .zip directamente
+  - Modificar **Celda 5** (config): actualizar comentario para indicar que acepta .shp o .zip
+  - Modificar **Celda 6** (carga): detectar si la ruta termina en .zip → usar `gpd.read_file()` directo (geopandas lo maneja)
+  - Si termina en .shp → comportamiento actual
+  - Verificar que la función `zipfile` o el lector directo de geopandas funciona sin errores
+
+  **Must NOT do**:
+  - No descomprimir archivos temporales (geopandas lee zip inline)
+  - No cambiar las rutas de salida
+
+  **References**:
+  - Documentación geopandas: soporta .zip nativamente desde v0.8+
+  - Shapefile en GEE se exporta como .zip con múltiples archivos internos
+
+  **Acceptance Criteria**:
+  - [ ] Celda 5 comentario actualizado: menciona .shp y .zip
+  - [ ] Celda 6: `gpd.read_file()` funciona con ruta .zip
+  - [ ] Carga del shapefile funciona igual para .shp y .zip
+
+  **QA Scenarios**:
+  ```
+  Scenario: Probar con .zip simulado
+    Tool: Bash
+    Steps:
+      1. Extraer source de la celda 6
+      2. Verificar que la línea `gpd.read_file(SHAPEFILE_PATH)` se ejecuta sin condicionales extra
+      3 (geopandas ya maneja .zip nativamente)
+    Expected Result: Sin errores, mismo comportamiento para .shp y .zip
+  ```
+
+  **Evidence to Capture**:
+  - [ ] `task-7-zip-support.txt`
+
+  **Commit**: YES (groups with 1-6)
+  - Message: `fix(colab): soporte para shapefile .zip en Celda 5 y 6`
+  - Files: `Fase1_Descarga_Mandarina.ipynb`
+
+---
+
 ## Final Verification Wave
 
 - [ ] F1. **Consistencia del Notebook** — `unspecified-high`
