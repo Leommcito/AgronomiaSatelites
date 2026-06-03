@@ -1,0 +1,10 @@
+pystac-client
+geopandas
+rioxarray
+rasterio
+odc-stac
+stackstac
+xarray
+matplotlib
+numpy
+pandas
