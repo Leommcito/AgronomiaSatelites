@@ -58,7 +58,54 @@ Cada carpeta contiene:
 
 ---
 
-## 2. S2REP — Posición del Borde Rojo (clorofila)
+## 2. NDRE — Índice de Borde Rojo (vigor + clorofila)
+
+**Propósito**: Índice de vegetación del borde rojo. Similar al NDVI pero usando la banda RedEdge1 (B5) en vez de la Roja (B4). Es más sensible que el NDVI en doseles densos y no se satura tan rápido en cultivos con alto LAI.
+
+| Detalle | Valor |
+|---|---|
+| Colormap | Personalizado GEE (rojo ↔ amarillo ↔ verde) |
+| Rango visual | 0.1 – 0.6 |
+| Rango fisiológico | −1 – 1 |
+| Fórmula | `(NIR − RedEdge1) / (NIR + RedEdge1)` = `(B8 − B5) / (B8 + B5)` |
+
+### Paleta de colores
+
+```
+0.1 (rojo)  ──  0.2 (naranja)  ──  0.35 (amarillo)  ──  0.5 (verde claro)  ──  0.6 (verde oscuro)
+  baja              baja-media        moderada             alta                  muy alta
+  clorofila         clorofila         clorofila            clorofila             clorofila
+```
+
+### Interpretación agronómica
+
+| Rango | Color | Significado |
+|---|---|---|
+| < 0.15 | Rojo/Naranja | Vegetación estresada o muy rala. Suelo expuesto |
+| 0.15 – 0.30 | Naranja/Amarillo | Vegetación con baja actividad fotosintética. Posible deficiencia o estrés temprano |
+| 0.30 – 0.45 | Amarillo/Verde claro | Vegetación activa. Rango normal para mandarina en crecimiento |
+| 0.45 – 0.60 | Verde | Buena salud. Alta concentración de clorofila. Cobertura foliar densa |
+
+### Qué monitorear
+
+- Es el índice utilizado como **referencia visual principal** en el time-lapse semanal de GEE
+- Responde rápido a cambios en nitrógeno y clorofila
+- Al ser un índice de borde rojo, es más sensible que el MSAVI2 a cambios **fisiológicos** (nutrición, estrés) y menos sensible a cambios **estructurales** (cantidad de hojas)
+- Si el NDRE baja pero el MSAVI2 se mantiene → el problema es nutricional, no de biomasa
+- Si ambos bajan → pérdida de vigor general
+
+### NDRE vs MSAVI2
+
+| Situación | NDRE | MSAVI2 |
+|---|---|---|
+| Planta bien nutrida | Alto | Alto |
+| Deficiencia de N | **Bajo** | Medio (todavía tiene hojas) |
+| Defoliación por plaga | Bajo | **Bajo** |
+| Malezas en callejón | Medio | **Falso alto** (MSAVI2 corrige esto) |
+
+---
+
+## 3. S2REP — Posición del Borde Rojo (clorofila)
 
 **Propósito**: Detecta el punto de inflexión del espectro entre el rojo y el infrarrojo. Es un indicador directo del **contenido de clorofila** y, por lo tanto, del **estado nutricional (nitrógeno)** del cultivo.
 
@@ -94,7 +141,7 @@ Cada carpeta contiene:
 
 ---
 
-## 3. LAI_RedEdge — Índice de Área Foliar
+## 4. LAI_RedEdge — Índice de Área Foliar
 
 **Propósito**: Estima cuánta superficie de hoja hay por unidad de superficie de suelo. Es una variable estructural crítica para modelos de requerimiento hídrico.
 
@@ -133,7 +180,7 @@ Cada carpeta contiene:
 
 ---
 
-## 4. Cab_RedEdge — Contenido de Clorofila foliar
+## 5. Cab_RedEdge — Contenido de Clorofila foliar
 
 **Propósito**: Mide la concentración de clorofila por unidad de área foliar. Complementa al S2REP.
 
@@ -170,7 +217,7 @@ Cada carpeta contiene:
 
 ---
 
-## 5. Kc_Actual — Coeficiente de Cultivo real
+## 6. Kc_Actual — Demanda de Agua (Riego)
 
 **Propósito**: Estima cuánta agua está consumiendo el cultivo en relación a la evapotranspiración de referencia (ETo). Sirve para calcular el riego: `ETc = ETo × Kc`.
 
@@ -214,9 +261,11 @@ Cada carpeta contiene:
 ### Para el día a día
 
 | Si ves... | Interpretá... |
-|---|---|
+|---|---|---|
 | 🟢 MSAVI2 subiendo | El vigor aumenta. Crecimiento normal |
 | 🔴 MSAVI2 bajando | Posible estrés. Revisar riego/plagas |
+| 🔴 NDRE baja, MSAVI2 estable | Deficiencia de nitrógeno (las hojas están pero pierden clorofila) |
+| 🟡 NDRE alto después de fertilizar | La fertilización nitrogenada está funcionando |
 | 🔵 S2REP bajo | Revisar plan de fertilización nitrogenada |
 | 🟡 S2REP alto después de urea | La fertilización funcionó |
 | Parcela A mucho peor que B | Priorizar recorrida en A |
