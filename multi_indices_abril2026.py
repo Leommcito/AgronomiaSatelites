@@ -284,17 +284,17 @@ def calcular_s2rep(b4, b5, b6, b7):
 
 def calcular_lai(s2rep):
     """LAI_RedEdge = (S2REP - 700) * LAI_factor. Clip a [0.1, 6.0]."""
-    return xr.clip((s2rep - 700) * LAI_factor, 0.1, 6.0)
+    return ((s2rep - 700) * LAI_factor).clip(0.1, 6.0)
 
 
 def calcular_cab(s2rep):
     """Cab_RedEdge = (S2REP - 700) * Cab_factor. Clip a [0, 100]."""
-    return xr.clip((s2rep - 700) * Cab_factor, 0, 100)
+    return ((s2rep - 700) * Cab_factor).clip(0, 100)
 
 
 def calcular_kc(msavi2):
     """Kc_Actual = MSAVI2 * kc_slope + kc_intercept. Clip a [0.2, 1.3]."""
-    return xr.clip(msavi2 * kc_slope + kc_intercept, 0.2, 1.3)
+    return (msavi2 * kc_slope + kc_intercept).clip(0.2, 1.3)
 
 
 def calcular_estadisticas_parcela(da, gdf, nombre_indice):
