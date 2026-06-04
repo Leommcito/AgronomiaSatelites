@@ -11,3 +11,5 @@ output/
 ndre2025_2026/
 Fase1_RGB_Abril/
 .omo/
+__pycache__/
+*.pyc
